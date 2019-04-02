@@ -18,7 +18,10 @@ namespace mvc {
 template<class Model>
 class Controller : public std::enable_shared_from_this<Controller<Model>>
 {
+    using CtrlPtr = std::shared_ptr<Controller<Model>>;
 public:
+    Controller() : m_self(CtrlPtr(this, [](auto){}))
+    {}
     virtual ~Controller()
     {
         assert(m_models.empty() && "All model objects must be removed");
@@ -66,6 +69,7 @@ private:
     void notify(std::function<void(ViewPtr)> fun);
 
 private:
+    const CtrlPtr m_self;
     bool m_lock = false;
     std::deque<std::function<void()>> m_events;
     std::vector<std::weak_ptr<details::Observer<Model>>> m_views;
