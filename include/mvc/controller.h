@@ -16,7 +16,7 @@ namespace mvc {
 
 //! General controller class
 template<class Model>
-class Controller : public std::enable_shared_from_this<Controller<Model>>
+class Controller
 {
     using CtrlPtr = std::shared_ptr<Controller<Model>>;
 public:
@@ -69,7 +69,7 @@ private:
     void notify(std::function<void(ViewPtr)> fun);
 
 private:
-    const CtrlPtr m_self;
+    CtrlPtr m_self;
     bool m_lock = false;
     std::deque<std::function<void()>> m_events;
     std::vector<std::weak_ptr<details::Observer<Model>>> m_views;
@@ -103,19 +103,19 @@ void Controller<Model>::detach(const ViewPtr & view)
 template <class Model>
 auto Controller<Model>::createRequest() -> ModelCreator
 {
-    return ModelCreator(this->shared_from_this());
+    return ModelCreator(m_self);
 }
 
 template <class Model>
 auto Controller<Model>::updateRequest(ModelPtrC model) -> ModelUpdater
 {
-    return ModelUpdater(this->shared_from_this(), std::move(model));
+    return ModelUpdater(m_self, std::move(model));
 }
 
 template <class Model>
 auto Controller<Model>::removeRequest(ModelPtrC model) -> ModelRemover
 {
-    return ModelRemover(this->shared_from_this(), std::move(model));
+    return ModelRemover(m_self, std::move(model));
 }
 
 template <class Model>

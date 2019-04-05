@@ -13,7 +13,6 @@ namespace mvc {
 template<class Model>
 class View
     : public details::Observer<Model>
-    , public std::enable_shared_from_this<View<Model>>
 {
     using Obs = details::Observer<Model>;
 public:
@@ -28,8 +27,6 @@ public:
         m_ctrl->attach(m_self);
     }
 
-    virtual ~View() = default;
-
     auto createRequest() { return m_ctrl->createRequest(); }
     auto removeRequest(ModelPtrC model) { return m_ctrl->removeRequest(std::move(model)); }
     auto updateRequest(ModelPtrC model) { return m_ctrl->updateRequest(std::move(model)); }
@@ -42,7 +39,7 @@ protected:
     using Obs::removed;
 
 private:
-    const ViewPtr m_self;
+    ViewPtr m_self;
     const CtrlPtr m_ctrl;
 };
 
